@@ -1,8 +1,8 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404
-from django.shortcuts import render, get_list_or_404, get_object_or_404
-from django.views.generic import ListView, DetailView
-from django.views.generic.base import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from .forms import CreateProductForm, UpdateProductForm
 from .models import Category, Product
 
 
@@ -73,3 +73,26 @@ class ProductsListView(ListView):
 class ProductDetailsView(DetailView):
     model = Product
     template_name = 'product/product_details.html'
+
+
+class IsAdminCheckMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_authenticated and\
+               (self.request.user.is_staff or self.request.user.is_superuser)
+
+
+class ProductCreateView(IsAdminCheckMixin, CreateView):
+    model = Product
+    template_name = 'product/create.html'
+    form_class = CreateProductForm
+
+
+class ProductEditView(IsAdminCheckMixin, UpdateView):
+    model = Product
+    template_name = 'product/edit.html'
+    form_class = UpdateProductForm
+
+
+class ProductDeleteView(IsAdminCheckMixin, DeleteView):
+    model = Product
+    template_name = 'product/delete.html'
