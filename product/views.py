@@ -1,9 +1,11 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic.base import View
 
-from .forms import CreateProductForm, UpdateProductForm
-from .models import Category, Product
+from .forms import CreateProductForm, UpdateProductForm, ImagesFormSet
+from .models import Category, Product, ProductImage
 
 
 # def homepage(request):
@@ -75,16 +77,33 @@ class ProductDetailsView(DetailView):
     template_name = 'product/product_details.html'
 
 
+
 class IsAdminCheckMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_authenticated and\
                (self.request.user.is_staff or self.request.user.is_superuser)
 
 
-class ProductCreateView(IsAdminCheckMixin, CreateView):
-    model = Product
-    template_name = 'product/create.html'
-    form_class = CreateProductForm
+class ProductCreateView(IsAdminCheckMixin, View):
+    def get(self, request):
+        form = CreateProductForm()
+        formset = ImagesFormSet(queryset=ProductImage.objects.none())
+        return render(request, 'product/create.html', locals())
+
+    def post(self, request):
+        form = CreateProductForm(request.POST)
+        formset = ImagesFormSet(request.POST,
+                                request.FILES,
+                                queryset=ProductImage.objects.none())
+        if form.is_valid() and formset.is_valid():
+            product = form.save()
+            for form in formset.cleaned_data:
+                image = form.get('image')
+                if image is not None:
+                    pic = ProductImage(product=product, image=image)
+                    pic.save()
+            return redirect(product.get_absolute_url())
+        print(form.errors, formset.errors)
 
 
 class ProductEditView(IsAdminCheckMixin, UpdateView):

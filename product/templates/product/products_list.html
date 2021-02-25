@@ -1,6 +1,11 @@
 {% extends 'includes/base.html' %}
 {% block title %}Список продуктов{% endblock title %}
 {% block body %}
+  {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'create-product' %}">
+      <button type="button">Создать новый продукт</button>
+    </a>
+  {% endif %}
   {% for product in products %}
     <a href="{% url 'product-details' product.id %}">{{ product.title }}</a>
   {% endfor %}
