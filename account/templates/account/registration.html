@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Регистрация</title>
-</head>
-<body>
-  <h1>Зарегистрируйте свой аккаунт</h1>
+{% extends 'auth_base.html' %}
+{% block title %}Регистрация{% endblock title %}
+{% block body %}
+<h1>Зарегистрируйте свой аккаунт</h1>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Зарегистрироваться</button>
   </form>
-</body>
-</html>
+{% endblock body %}

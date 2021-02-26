@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.base import View
 
@@ -106,12 +107,36 @@ class ProductCreateView(IsAdminCheckMixin, View):
         print(form.errors, formset.errors)
 
 
-class ProductEditView(IsAdminCheckMixin, UpdateView):
-    model = Product
-    template_name = 'product/edit.html'
-    form_class = UpdateProductForm
+class ProductEditView(IsAdminCheckMixin, View):
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        form = CreateProductForm(instance=product)
+        formset = ImagesFormSet(queryset=product.images.all())
+        return render(request, 'product/edit.html', locals())
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        form = CreateProductForm(instance=product, data=request.POST)
+        formset = ImagesFormSet(request.POST,
+                                request.FILES,
+                                queryset=product.images.all())
+        if form.is_valid() and formset.is_valid():
+            product = form.save()
+            for form in formset.cleaned_data:
+                image = form.get('image')
+                if image is not None and not ProductImage.objects.filter(product=product, image=image).exists():
+                    pic = ProductImage(product=product, image=image)
+                    pic.save()
+            for form in formset.deleted_forms:
+                image = form.cleaned_data.get('id')
+                if image is not None:
+                    image.delete()
+
+            return redirect(product.get_absolute_url())
+        print(form.errors, formset.errors)
 
 
 class ProductDeleteView(IsAdminCheckMixin, DeleteView):
     model = Product
     template_name = 'product/delete.html'
+    success_url = reverse_lazy('index-page')

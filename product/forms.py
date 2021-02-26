@@ -16,8 +16,11 @@ class ImageForm(forms.ModelForm):
         fields = ('image',)
 
 
-ImagesFormSet = modelformset_factory(ProductImage, form=ImageForm, extra=3, max_num=5)
-
+ImagesFormSet = modelformset_factory(ProductImage,
+                                     form=ImageForm,
+                                     extra=3,
+                                     max_num=5,
+                                     can_delete=True)
 
 
 class UpdateProductForm(forms.ModelForm):

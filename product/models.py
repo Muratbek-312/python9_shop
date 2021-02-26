@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse_lazy
+from pytils.translit import slugify
 
 
 class Category(models.Model):
@@ -8,6 +9,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Product(models.Model):

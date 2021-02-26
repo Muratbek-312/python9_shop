@@ -13,6 +13,18 @@ def send_activation_mail(user):
         [user.email, ])
 
 
+# def transliterate(string):
+#     table = {
+#         'а': 'a',
+#         'б': 'b'
+#     }
+#     result = ''
+#     for letter in string:
+#         result += table[letter]
+#     return result
+#
+# 'a'.translate()
+
 #TODO: смена пароля
 #TODO: забыли пароль
 #TODO: smtp

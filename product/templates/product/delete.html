@@ -1,0 +1,13 @@
+{% extends 'includes/base.html' %}
+
+{% block title %}Удаление продукта{% endblock %}
+{% block body %}
+  <h1>Вы действительно хотите удалить продукт?</h1>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Да</button>
+    <a href="{% url 'product-details' product.id %}">
+      <button type="button">Отмена</button>
+    </a>
+  </form>
+{% endblock body %}

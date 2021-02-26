@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Аккаунт успешно зарегистрирован</title>
-</head>
-<body>
+{% extends 'auth_base.html' %}
+{% block title %} Аккаунт успешно зарегистрирован{% endblock title %}
+{% block body %}
   <h1>Поздравляем! Вы успешно зарегистровались</h1>
   <p>Вам было отправлено письмо для активации
   Вашего аккаунта</p>
-</body>
-</html>
+{% endblock body %}
