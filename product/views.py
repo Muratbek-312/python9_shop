@@ -24,7 +24,7 @@ class ProductsListView(ListView):
         queryset = super().get_queryset()
         category_slug = self.kwargs.get('category_slug')
         if not Category.objects.filter(slug=category_slug).exists():
-            raise Http404('Нет такой категории')
+            raise Http404('Категория не существует')
         queryset = queryset.filter(category_id=category_slug)
         return queryset
 
